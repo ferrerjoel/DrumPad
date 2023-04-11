@@ -37,33 +37,35 @@ export default function App() {
 }
 
 const DrumButton = (props) => {
-
   const sounds = [
-    require(`./assets/sounds/trumpet.mp3`), 
-    require(`./assets/sounds/trumpet.mp3`),
-    require(`./assets/sounds/trumpet.mp3`), 
-    require(`./assets/sounds/trumpet.mp3`),
-    require(`./assets/sounds/trumpet.mp3`), 
-    require(`./assets/sounds/trumpet.mp3`),
-    require(`./assets/sounds/trumpet.mp3`), 
-    require(`./assets/sounds/trumpet.mp3`),
-    require(`./assets/sounds/trumpet.mp3`), 
-  ]
+    require(`./assets/sounds/0.wav`),
+    require(`./assets/sounds/1.wav`),
+    require(`./assets/sounds/2.wav`),
+    require(`./assets/sounds/3.wav`),
+    require(`./assets/sounds/4.wav`),
+    require(`./assets/sounds/5.wav`),
+    require(`./assets/sounds/6.wav`),
+    require(`./assets/sounds/7.wav`),
+    require(`./assets/sounds/8.wav`),
+  ];
 
-  const [sound, setSound] = React.useState();
+  const [soundObj, setSoundObj] = React.useState(null);
 
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(sounds[props.sound]);
-    setSound(sound);
-    await sound.playAsync();
+    setSoundObj(sound);
+    await sound.replayAsync();
   }
 
   return (
-    <TouchableOpacity style={[styles.button, {backgroundColor: props.color}]}  onPress={playSound}>
+    <TouchableOpacity
+      style={[styles.button, { backgroundColor: props.color }]}
+      onPress={playSound}
+    ></TouchableOpacity>
+  );
+};
 
-    </TouchableOpacity>
-  )
-}
+
 
 const styles = StyleSheet.create({
   container: {
