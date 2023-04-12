@@ -97,7 +97,6 @@ const DrumButton = (props) => {
           locations={[0, 1]}
       >
       </LinearGradient>
-
     </TouchableOpacity>
   );
 };
