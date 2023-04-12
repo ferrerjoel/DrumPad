@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Audio } from 'expo-av';
 import tinycolor from 'tinycolor2';
 import {LinearGradient} from 'expo-linear-gradient';
+import { Platform } from 'react-native';
 
 export default function App() {
   // Returns a random color to be used on DrumButton creation
@@ -16,14 +17,10 @@ export default function App() {
     return color;
   }
 
-  function getLighterColor(color) {
-    const baseColor = tinycolor(color);
-    const lighterColor = baseColor.lighten(10).toString();
-    return lighterColor;
-  }
-
   return (
     <View style={styles.container}>
+      {Platform.OS === 'web' && 
+      <Text style={{color: "#ffffff", fontSize: 26}}>Try using the numeric pad!</Text>}
       <StatusBar style="auto" />
       <View style={styles.horizontalContainer}>
         <DrumButton sound="0" color={getRandomColor()}/>
@@ -65,6 +62,28 @@ const DrumButton = (props) => {
     setSoundObj(sound);
     await sound.replayAsync();
   }
+  // Called when a button is clicked, allows to play the buttons from the web keyboard
+  function handleKeyDown(event) {
+    console.log(event.key); // Log the key that was pressed
+    if (event.key -1 == props.sound) {
+      // Trigger the button click
+      const button = document.getElementById("button-0");
+      playSound();
+    }
+  }
+  
+  // Add the event listener to the keyboard
+  React.useEffect(() => {
+    console.log(typeof window)
+    // We are only going to set there listeners if we are in a browser
+    if (Platform.OS === 'web') {
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+      };
+    }
+  }, []);
+  
 
   const gradientColors = [props.color, tinycolor(props.color).lighten(20).toString()];
 
@@ -76,8 +95,10 @@ const DrumButton = (props) => {
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           locations={[0, 1]}
-      ></LinearGradient>
-  </TouchableOpacity>
+      >
+      </LinearGradient>
+
+    </TouchableOpacity>
   );
 };
 
