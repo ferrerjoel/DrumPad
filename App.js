@@ -1,10 +1,12 @@
 import * as React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
 import { Audio } from 'expo-av';
+import tinycolor from 'tinycolor2';
+import {LinearGradient} from 'expo-linear-gradient';
 
 export default function App() {
-
+  // Returns a random color to be used on DrumButton creation
   function getRandomColor() {
     const letters = "0123456789ABCDEF";
     let color = "#";
@@ -12,6 +14,12 @@ export default function App() {
       color += letters[Math.floor(Math.random() * letters.length)];
     }
     return color;
+  }
+
+  function getLighterColor(color) {
+    const baseColor = tinycolor(color);
+    const lighterColor = baseColor.lighten(10).toString();
+    return lighterColor;
   }
 
   return (
@@ -35,7 +43,7 @@ export default function App() {
     </View>
   );
 }
-
+// A button where you pass the audio number as a prop
 const DrumButton = (props) => {
   const sounds = [
     require(`./assets/sounds/0.wav`),
@@ -51,21 +59,27 @@ const DrumButton = (props) => {
 
   const [soundObj, setSoundObj] = React.useState(null);
 
+  // We are going to create a new sound on every click, allowing them to overlap
   async function playSound() {
     const { sound } = await Audio.Sound.createAsync(sounds[props.sound]);
     setSoundObj(sound);
     await sound.replayAsync();
   }
 
+  const gradientColors = [props.color, tinycolor(props.color).lighten(20).toString()];
+
   return (
-    <TouchableOpacity
-      style={[styles.button, { backgroundColor: props.color }]}
-      onPress={playSound}
-    ></TouchableOpacity>
+    <TouchableOpacity onPress={playSound}>
+      <LinearGradient
+          style={styles.button}
+          colors={gradientColors}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          locations={[0, 1]}
+      ></LinearGradient>
+  </TouchableOpacity>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
